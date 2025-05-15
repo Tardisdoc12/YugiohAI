@@ -1,6 +1,14 @@
+################################################################################
+# filename: downloader_image.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import os
 import requests
 
+################################################################################
 
 class DownloaderImage:
     def __init__(self, path_to_images):
@@ -19,3 +27,7 @@ class DownloaderImage:
                 f.write(response.content)
         else:
             raise f"Erreur ({response.status_code}) lors du téléchargement : {url_path}"
+
+################################################################################
+# End of File
+################################################################################

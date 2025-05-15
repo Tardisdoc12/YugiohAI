@@ -1,3 +1,10 @@
+################################################################################
+# filename: MatcherVison.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import os
 import json
 import cv2
@@ -6,6 +13,7 @@ from collections import Counter, defaultdict
 import faiss
 from downloader_image import DownloaderImage
 
+################################################################################
 
 def get_images(
     path_to_stock_cards: str = "cards",
@@ -21,6 +29,8 @@ def get_images(
     for value in cards.values():
         path_card = value[1]
         downloader(path_card)
+
+################################################################################
 
 class MatcherVision:
     def __init__(self, nfeatures : int = 200, templates_dir : str = "cards"):
@@ -105,6 +115,7 @@ class MatcherVision:
         
         return results
 
+################################################################################
 
 if __name__ == "__main__":
     import time
@@ -125,3 +136,7 @@ if __name__ == "__main__":
     print(f"le matching a pris:",time.time() - start_time)
     for i, (match, score) in enumerate(results):
         print(f"Image {i}: carte = {match}, score = {score}")
+
+################################################################################
+# End of File
+################################################################################

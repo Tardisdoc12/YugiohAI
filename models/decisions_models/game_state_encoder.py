@@ -1,6 +1,14 @@
+################################################################################
+# filename: game_state_encoder.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import torch
 import torch.nn as nn
 
+################################################################################
 
 class GameStateEncoder(nn.Module):
     def __init__(self, vocab_size, embed_dim=128):
@@ -84,3 +92,7 @@ class GameStateEncoder(nn.Module):
         # Concatène tout
         full_vector = torch.cat(vector_final, dim=0)  # (embed_dim * 8,)
         return full_vector
+
+################################################################################
+# End of File
+################################################################################

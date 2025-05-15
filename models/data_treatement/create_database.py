@@ -1,8 +1,16 @@
+################################################################################
+# filename: create_database.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import os
 import json
 import requests
 from globals import api_url
 
+################################################################################
 
 def create_database_file(path_file: str) -> None:
     if os.path.exists(path_file):
@@ -11,6 +19,7 @@ def create_database_file(path_file: str) -> None:
     with open(path_file, "w") as file:
         json.dump(reponse.json(), file)
 
+################################################################################
 
 def treat_database_to_image(path_to_database):
     file_path_final = transform_path(path_to_database)
@@ -30,11 +39,13 @@ def treat_database_to_image(path_to_database):
     with open(file_path_final, "w") as file:
         json.dump(cards, file)
 
+################################################################################
 
 def transform_path(path_to_treat: str) -> str:
     path_list = path_to_treat.split(".")
     return ".".join([path_list[0] + "_treated", path_list[-1]])
 
+################################################################################
 
 def main():
     path_file = "dataset/processed/yugioh_database.json"
@@ -43,6 +54,11 @@ def main():
     with open(transform_path(path_file), "r") as file:
         print(len(json.load(file)))
 
+################################################################################
 
 if __name__ == "__main__":
     main()
+
+################################################################################
+# End of File
+################################################################################

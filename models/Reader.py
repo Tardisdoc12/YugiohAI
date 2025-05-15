@@ -1,16 +1,27 @@
+################################################################################
+# filename: Reader.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import struct
 import lzma
+
+################################################################################
 
 REPLAY_COMPRESSED = 0x1
 REPLAY_EXTENDED_HEADER = 0x4
 REPLAY_YRP1 = 0x31707279
 REPLAY_YRPX = 0x58707279
 
+################################################################################
 
 class ReplayHeader:
     def __init__(self, data):
         self.id, self.version, self.flag, self.datasize = struct.unpack("<IHHI", data)
 
+################################################################################
 
 class ExtendedReplayHeader(ReplayHeader):
     def __init__(self, data):
@@ -18,6 +29,7 @@ class ExtendedReplayHeader(ReplayHeader):
         self.props = data[12:17]
         self.header_version = data[17]
 
+################################################################################
 
 def read_replay_file(path):
     with open(path, "rb") as f:
@@ -60,6 +72,11 @@ def read_replay_file(path):
 
         return decompressed  # Tu peux ensuite parser les données avec struct ou autre
 
+################################################################################
 
 replay_data = read_replay_file("dataset/2025-05-13 16-48-12.yrpX")
 print(f"Décompressé : {len(replay_data)} octets")
+
+################################################################################
+# End of File
+################################################################################

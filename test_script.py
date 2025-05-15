@@ -1,9 +1,17 @@
+################################################################################
+# filename: test_script.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 from models.decisions_models.game_state_encoder import GameStateEncoder
 from models.decisions_models.mlp_yugioh import YuGiOhMLP
 from models.BoardGame import GameBoard
 import torch
 import torch.nn.functional as F
 
+################################################################################
 
 encoder = GameStateEncoder(vocab_size=5000, embed_dim=128)
 model = YuGiOhMLP(input_dim=1024, hidden_dim=512, num_card_ids=5000)
@@ -41,3 +49,7 @@ action_id = torch.argmax(action_probs, dim=-1).item()
 print(f"🔮 Carte proposée : ID {card_id}")
 print(f"📦 Zone ciblée   : {zone_id}")
 print(f"🎬 Action choisie: {action_id}")
+
+################################################################################
+# End of File
+################################################################################

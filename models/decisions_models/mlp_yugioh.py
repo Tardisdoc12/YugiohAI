@@ -1,3 +1,10 @@
+################################################################################
+# filename: mlp_yugioh.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -36,3 +43,7 @@ class YuGiOhMLP(nn.Module):
         action_logits = self.action_head(x)
 
         return card_logits, zone_logits, action_logits
+
+################################################################################
+# End of File
+################################################################################

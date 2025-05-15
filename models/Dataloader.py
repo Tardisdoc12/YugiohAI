@@ -1,5 +1,14 @@
+################################################################################
+# filename: Dataloader.py
+# Author: Jean Anquetil
+# Email: janquetil@e-vitech.com
+# Date: 15/05,2025
+################################################################################
+
 import cv2
 import easyocr
+
+################################################################################
 
 reader = easyocr.Reader(["en"])
 result = reader.readtext("dataset/field.png")
@@ -52,3 +61,7 @@ for data in result:
 
 # Sauvegarder ou afficher le résultat
 cv2.imwrite("output_2.png", image)
+
+################################################################################
+# End of File
+################################################################################
