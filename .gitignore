@@ -5,6 +5,7 @@ __pycache__/
 cards/
 dataset/processed/
 training/
+.venv/
 
 # C extensions
 *.so

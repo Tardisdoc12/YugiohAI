@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from models.data_treatement.globals import api_url
+from globals import api_url
 
 
 def create_database_file(path_file: str) -> None:
@@ -37,7 +37,7 @@ def transform_path(path_to_treat: str) -> str:
 
 
 def main():
-    path_file = "dataset/yugioh_database.json"
+    path_file = "dataset/processed/yugioh_database.json"
     create_database_file(path_file)
     treat_database_to_image(path_file)
     with open(transform_path(path_file), "r") as file:
