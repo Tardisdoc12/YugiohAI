@@ -36,34 +36,37 @@ class MatcherVision:
     def __init__(self, nfeatures : int = 200, templates_dir : str = "cards"):
         # ORB init
         self.orb = cv2.ORB_create(nfeatures=nfeatures)
-        # self.bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
-        # self.index = faiss.IndexHNSWFlat(d=32, M=32)
-        quantizer = faiss.IndexFlatL2(32)
-        self.index = faiss.IndexIVFPQ(quantizer, 32, 100, 8, 8)
         self.labels = []
         self.__load_index(templates_dir)
     
     def __load_index(self, template_dir):
-        all_descriptors = []
-        for filename in os.listdir(template_dir):
-            path = os.path.join(template_dir, filename)
-            img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-            _, des = self.orb.detectAndCompute(img, None)
-            all_descriptors.append(des.astype(np.float32))
-            self.labels.extend([filename] * des.shape[0])
-        # Stack tous les descripteurs pour l'entraînement
-        all_descriptors = np.vstack(all_descriptors)
-        # Initialisation et entraînement de l'index
-        d = all_descriptors.shape[1]
-        nlist = 100
-        m = 8
-        nbits = 8
-        quantizer = faiss.IndexFlatL2(d)
-        self.index = faiss.IndexIVFPQ(quantizer, d, nlist, m, nbits)
-        print("➡️ Entraînement de l'index...")
-        self.index.train(all_descriptors)
-        print("✅ Entraînement terminé. Ajout des vecteurs...")
-        self.index.add(all_descriptors)
+        os.makedirs("training/", exist_ok=True)
+        if not os.path.exists("training/faiss_model.ivfpq"):
+            all_descriptors = []
+            for filename in os.listdir(template_dir):
+                path = os.path.join(template_dir, filename)
+                img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+                _, des = self.orb.detectAndCompute(img, None)
+                all_descriptors.append(des.astype(np.float32))
+                self.labels.extend([filename] * des.shape[0])
+            # Stack tous les descripteurs pour l'entraînement
+            all_descriptors = np.vstack(all_descriptors)        
+            # Initialisation et entraînement de l'index
+            d = all_descriptors.shape[1]
+            nlist = 100
+            m = 8
+            nbits = 8
+            quantizer = faiss.IndexFlatL2(d)
+            self.index = faiss.IndexIVFPQ(quantizer, d, nlist, m, nbits)
+            print("➡️ Entraînement de l'index...")
+            self.index.train(all_descriptors)
+            print("✅ Entraînement terminé. Ajout des vecteurs...")
+            self.index.add(all_descriptors)
+            faiss.write_index(self.index, "training/faiss_model.ivfpq")
+        else:
+            for filename in os.listdir(template_dir):
+                self.labels.extend([filename] * 200)
+            self.index = faiss.read_index("training/faiss_model.ivfpq")
 
     def __call__(self, image_gray_to_compare : np.ndarray):
         _, des_img = self.orb.detectAndCompute(image_gray_to_compare, None)
