@@ -1,0 +1,6 @@
+
+nc : 4
+names: [face_up, face_down, action, chained]
+
+train: ./images/train
+val: ./images/test
