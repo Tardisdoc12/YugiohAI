@@ -3,10 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 cards/
-dataset/processed/
+data_recognize/processed/
 training/
 .venv/
-
+output/
+runs/
 # C extensions
 *.so
 
