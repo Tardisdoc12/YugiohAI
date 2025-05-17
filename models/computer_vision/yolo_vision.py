@@ -7,6 +7,9 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import time
+import cv2
+import numpy as np
+import onnxruntime as ort
 from ultralytics import YOLO
 from MatcherVison import MatcherVision
 
@@ -22,18 +25,21 @@ def train_yolo_vision():
         name="yolov8n_custom" 
     )
 
-if __name__ == "__main__":
-    # train_yolo_vision()
-    import torch
-    print("GPU disponible :", torch.cuda.is_available())
-    import cv2
-    yolo = YOLO("runs/detect/yolov8n_custom7/weights/best.pt")
-    print("Device utilisé par YOLO :", yolo.device)
+
+################################################################################
+
+def inference_global(img_path):
+    from concurrent.futures import ThreadPoolExecutor
+    yolo = YOLO("runs/detect/yolov8n_custom7/weights/best.pt").to("cuda")
     matcher = MatcherVision(nfeatures=500)
-    img_path = "data_recognize/raw/field.png"
+    
     original_img = cv2.imread(img_path)
+
     start_time = time.time()
-    results = yolo.predict(source=img_path, save=False)
+
+    results = yolo.predict(source=img_path, save=False,device="cuda",verbose=False)
+    temp_int = time.time()
+    print(f"la detection a pris:",temp_int - start_time)
 
     images= []
     # Extraire les résultats
@@ -43,14 +49,23 @@ if __name__ == "__main__":
         if cls == 0:
             xyxy = box.xyxy[0].cpu().numpy().astype(int)  # coordonnées (x1, y1, x2, y2)
             x1, y1, x2, y2 = xyxy
-            print("x1:", x1, "y1:", y1)
             crop = original_img[y1:y2, x1:x2]  # découper l'image
+            cv2.imwrite(f"output/detections_class0/detection_{i}.png", crop)
             images.append(cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY))
-
-    best_match = matcher.batch_match(images)
-    print(f"le matching a pris:",time.time() - start_time)
+    trait_time = time.time()
+    print(f"le traitement a pris:",trait_time - temp_int)
+    with ThreadPoolExecutor() as executor:
+        best_match = list(executor.map(matcher, images))
+    final_time = time.time()
+    print(f"le matching a pris:",final_time - trait_time)
+    print("au global : ",final_time - start_time)
     for i, (match, score) in enumerate(best_match):
         print(f"Image {i}: carte = {match}, score = {score}")
+
+if __name__ == "__main__":
+    # train_yolo_vision()
+    img_path = "data_recognize/raw/field.png"
+    inference_global(img_path)
 
 ################################################################################
 # End of File

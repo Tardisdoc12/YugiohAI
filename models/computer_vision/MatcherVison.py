@@ -76,7 +76,6 @@ class MatcherVision:
         best_match = None
         _, indices = self.index.search(des_img.astype(np.float32), k=2)
         votes = [self.labels[i] for row in indices for i in row if i != -1]
-        print("63941210.jpg" in votes)
         counter = Counter(votes)
         best_match, best_score = counter.most_common(1)[0]
         return best_match, best_score
@@ -127,7 +126,7 @@ class MatcherVision:
 if __name__ == "__main__":
     import time
     get_images()
-    matcher = MatcherVision(nfeatures=500)
+    matcher = MatcherVision(nfeatures=350)
     image = cv2.imread("output/detections_class0/detection_1.png",cv2.IMREAD_GRAYSCALE)
     image_2 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
     image_3 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
