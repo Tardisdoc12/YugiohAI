@@ -74,7 +74,7 @@ def read_replay_file(path):
 
 ################################################################################
 
-replay_data = read_replay_file("dataset/2025-05-13 16-48-12.yrpX")
+replay_data = read_replay_file("data_recognize/2025-05-13 16-48-12.yrpX")
 print(f"Décompressé : {len(replay_data)} octets")
 
 ################################################################################

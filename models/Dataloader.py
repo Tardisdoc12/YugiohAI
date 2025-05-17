@@ -11,7 +11,7 @@ import easyocr
 ################################################################################
 
 reader = easyocr.Reader(["en"])
-result = reader.readtext("dataset/field.png")
+result = reader.readtext("data_recognize/field.png")
 # print(result)
 # import pytesseract
 
@@ -20,7 +20,7 @@ result = reader.readtext("dataset/field.png")
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Charger l'image avec OpenCV
-image = cv2.imread("dataset/field.png")
+image = cv2.imread("data_recognize/field.png")
 
 # Convertir en niveaux de gris (améliore souvent la détection)
 # gray = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

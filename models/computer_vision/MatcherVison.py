@@ -8,6 +8,7 @@
 import os
 import json
 import cv2
+import pickle
 import numpy as np
 from collections import Counter, defaultdict
 import faiss
@@ -17,7 +18,7 @@ from downloader_image import DownloaderImage
 
 def get_images(
     path_to_stock_cards: str = "cards",
-    path_file_with_url: str = "dataset/processed/yugioh_database_treated.json",
+    path_file_with_url: str = "data_recognize/processed/yugioh_database_treated.json",
 ):
     downloader = DownloaderImage(path_to_stock_cards)
     path_file = path_file_with_url
@@ -63,16 +64,19 @@ class MatcherVision:
             print("✅ Entraînement terminé. Ajout des vecteurs...")
             self.index.add(all_descriptors)
             faiss.write_index(self.index, "training/faiss_model.ivfpq")
+            with open("training/labels.pkl", "wb") as f:
+                pickle.dump(self.labels, f)
         else:
-            for filename in os.listdir(template_dir):
-                self.labels.extend([filename] * 200)
             self.index = faiss.read_index("training/faiss_model.ivfpq")
+            with open("training/labels.pkl", "rb") as f:
+                self.labels = pickle.load(f)
 
     def __call__(self, image_gray_to_compare : np.ndarray):
         _, des_img = self.orb.detectAndCompute(image_gray_to_compare, None)
         best_match = None
         _, indices = self.index.search(des_img.astype(np.float32), k=2)
         votes = [self.labels[i] for row in indices for i in row if i != -1]
+        print("63941210.jpg" in votes)
         counter = Counter(votes)
         best_match, best_score = counter.most_common(1)[0]
         return best_match, best_score
@@ -123,10 +127,10 @@ class MatcherVision:
 if __name__ == "__main__":
     import time
     get_images()
-    matcher = MatcherVision(nfeatures=200)
-    image = cv2.imread("dataset/raw/test_lv2_unicard.png",cv2.IMREAD_GRAYSCALE)
-    image_2 = cv2.imread("dataset/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
-    image_3 = cv2.imread("dataset/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
+    matcher = MatcherVision(nfeatures=500)
+    image = cv2.imread("output/detections_class0/detection_1.png",cv2.IMREAD_GRAYSCALE)
+    image_2 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
+    image_3 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
     start_time = time.time()
     best_match, best_score = matcher(image)
     print(f"Carte détectée : {best_match} score: {best_score}")

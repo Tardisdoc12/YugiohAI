@@ -3,7 +3,7 @@ from pathlib import Path
 from torch.utils.data import Dataset
 
 class DatasetVision(Dataset):
-    def __init__(self, path_to_dataset : str = "dataset/raw/vision_images"):
+    def __init__(self, path_to_dataset : str = "data_recognize/raw/vision_images"):
         self.images = []
         path_to_image_to_see = path_to_dataset
         for image in os.listdir(path_to_image_to_see):

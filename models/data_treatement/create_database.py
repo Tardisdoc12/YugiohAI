@@ -48,7 +48,7 @@ def transform_path(path_to_treat: str) -> str:
 ################################################################################
 
 def main():
-    path_file = "dataset/processed/yugioh_database.json"
+    path_file = "data_recognize/processed/yugioh_database.json"
     create_database_file(path_file)
     treat_database_to_image(path_file)
     with open(transform_path(path_file), "r") as file:
