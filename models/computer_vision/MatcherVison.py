@@ -126,7 +126,7 @@ class MatcherVision:
 if __name__ == "__main__":
     import time
     get_images()
-    matcher = MatcherVision(nfeatures=350)
+    matcher = MatcherVision(nfeatures=370)
     image = cv2.imread("output/detections_class0/detection_1.png",cv2.IMREAD_GRAYSCALE)
     image_2 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
     image_3 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
