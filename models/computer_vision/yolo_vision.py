@@ -33,7 +33,8 @@ def get_yolo_model() -> YOLO:
 ################################################################################
 
 def warmup_yolo(yolo_model : YOLO) -> None:
-    yolo_model.predict(source="data_recognize/raw/field.png", save=False, device="cuda",verbose=False)
+    for _ in range(5):
+        yolo_model.predict(source="data_recognize/raw/field.png", save=False, device="cuda",verbose=False)
 
 ################################################################################
 
