@@ -21,20 +21,32 @@ from yolo_vision import (
 
 ################################################################################
 
+dict_zones = {
+    "hand":[980,1080],
+    "spell&trap":[770,980],
+    "monster":[580, 770],
+    "opp_monster":[230,410],
+    "opp_spell&trap":[110,230],
+    "opp_hand":[0,110]
+}
+
+################################################################################
+
 class EyesComputerVision:
     def __init__(self):
-        self.matcher = MatcherVision(370)
-        if os.path.exists("runs/yolov11n_custom/weights/best.pt"):
+        self.matcher = MatcherVision(500)
+        if os.path.exists("runs/yolov8n_custom7/weights/best.pt"):
             train_yolo_vision()
         self.yolo = get_yolo_model()
         warmup_yolo(self.yolo)
         self.images = []
         self.original_img = None
-        self.cards = {}
+        self.cards = {"hand":{},"spell&trap":{},"monster":{},"opp_monster":{},"opp_spell&trap":{},"opp_hand":{}}
         with open("data_recognize/processed/yugioh_database_treated.json","r") as file:
             self.debug_code = json.load(file)
     
     def __getCardFromBox(self,box):
+        counting_face_down = 0
         cls = int(box.cls[0])
         if cls == 1:
             counting_face_down += 1
@@ -44,27 +56,27 @@ class EyesComputerVision:
             crop = self.original_img[y1:y2, x1:x2]
             match,score = self.matcher(cv2.cvtColor(crop,cv2.COLOR_BGR2GRAY))
             if score > 1:
-                self.cards[self.debug_code[match.split(".")[0]][0]] = box.xywh[0].cpu().numpy().astype(int)[:2]
+                coord = box.xywh[0].cpu().numpy().astype(int)[:2]
+                name = self.debug_code[match.split(".")[0]][0]
+                for zone in dict_zones:
+                    if coord[1] >= dict_zones[zone][0] and coord[1] <= dict_zones[zone][1]:
+                        self.cards[zone][name] = coord
+                # if coord[1] >= 980:
+                #     self.cards["hand"][name] = box.xywh[0].cpu().numpy().astype(int)[:2]
+                # else:
+                #     self.cards["field"][name] = box.xywh[0].cpu().numpy().astype(int)[:2]
+        else:
+            print("action")
 
     def getCardsInImage(self,image_path) -> None:
         self.original_img = cv2.imread(image_path)
-        results = self.yolo.predict(source=image_path, save=True,device="cuda",verbose=False)
+        results = self.yolo.predict(source=image_path, save=False,device="cuda",verbose=False)
         boxes = results[0].boxes
+        # for box in boxes:
+        #     self.__getCardFromBox(box)
         with ThreadPoolExecutor() as executor:
             executor.map(self.__getCardFromBox,boxes)
         print(self.cards)
-        # counting_face_down = 0
-        # for i, box in enumerate(boxes):
-        #     cls = int(box.cls[0])
-        #     if cls == 1:
-        #         counting_face_down += 1
-        #     elif cls == 0:
-        #         xyxy = box.xyxy[0].cpu().numpy().astype(int)  # coordonnées (x1, y1, x2, y2)
-        #         x1, y1, x2, y2 = xyxy
-        #         crop = self.original_img[y1:y2, x1:x2]  # découper l'image
-        #         self.images.append(cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY))
-        # counting_face_down = max(counting_face_down - 4, 0)
-        # print(f"Il y a :\n{counting_face_down} cartes face cachée\net\n{len(self.images)} cartes visibles sur le terrain")
     
     def get_name_cards(self):
         with ThreadPoolExecutor() as executor:
@@ -83,13 +95,9 @@ if __name__ == "__main__":
     import time
     eyes = EyesComputerVision()
     start_time = time.time()
-    eyes.getCardsInImage("data_recognize/raw/field.png")
+    eyes.getCardsInImage("data_recognize/raw/test_lv2.png")
     int_time = time.time()
-    # eyes.get_name_cards()
-    # end_time = time.time()
     print("on a l'inference + post traitement en :",int_time - start_time)
-    # print("le matching est en :",end_time - int_time)
-    # print("Au total on en a eu pour :",end_time - start_time)
 
 ################################################################################
 # End Of File

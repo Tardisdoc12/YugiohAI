@@ -33,8 +33,13 @@ def treat_database_to_image(path_to_database):
     for card in datas["data"]:
         id_card = card["card_images"][0]["id"]
         name_card = card["name"]
-        image_card_path = card["card_images"][0]["image_url_small"]
-        cards[id_card] = [name_card, image_card_path]
+        for image_id in range(len(card["card_images"])):
+            image_card_path = card["card_images"][image_id]["image_url_small"]
+            id_images = image_card_path.split("/")[-1].split(".")[0]
+            if id_card != id_images:
+                cards[id_images] = [name_card, image_card_path]
+            else:
+                cards[id_card] = [name_card, image_card_path]
 
     with open(file_path_final, "w") as file:
         json.dump(cards, file)

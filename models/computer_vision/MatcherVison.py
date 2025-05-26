@@ -126,17 +126,17 @@ class MatcherVision:
 if __name__ == "__main__":
     import time
     get_images()
-    matcher = MatcherVision(nfeatures=370)
-    image = cv2.imread("output/detections_class0/detection_1.png",cv2.IMREAD_GRAYSCALE)
+    matcher = MatcherVision(nfeatures=500)
+    # image = cv2.imread("output/detections_class0/detection_1.png",cv2.IMREAD_GRAYSCALE)
     image_2 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
     image_3 = cv2.imread("data_recognize/raw/test_lv2_unicard_2.png",cv2.IMREAD_GRAYSCALE)
     start_time = time.time()
-    best_match, best_score = matcher(image)
+    best_match, best_score = matcher(image_3)
     print(f"Carte détectée : {best_match} score: {best_score}")
     best_match, best_score = matcher(image_2)
     print(f"le matching a pris:",time.time() - start_time)
     print(f"Carte détectée : {best_match} score: {best_score}")
-    batch_images = [image, image_2]
+    batch_images = [image_3, image_2]
     start_time = time.time()
     results = matcher.batch_match(batch_images)
     print(f"le matching a pris:",time.time() - start_time)

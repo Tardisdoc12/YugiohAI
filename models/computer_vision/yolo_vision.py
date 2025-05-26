@@ -27,7 +27,7 @@ def train_yolo_vision():
 ################################################################################
 
 def get_yolo_model() -> YOLO:
-    yolo = YOLO("runs/detect/yolov8n_custom3/weights/best.pt").to("cuda")
+    yolo = YOLO("runs/detect/yolov8n_custom7/weights/best.pt").to("cuda")
     return yolo
 
 ################################################################################
@@ -40,7 +40,7 @@ def warmup_yolo(yolo_model : YOLO) -> None:
 
 def inference_global(img_path):
     from concurrent.futures import ThreadPoolExecutor
-    yolo = YOLO("runs/detect/yolov11n_custom/weights/best.pt").to("cuda")
+    yolo = YOLO("runs/detect/yolov8n_custom7/weights/best.pt").to("cuda")
     matcher = MatcherVision(nfeatures=370)
     yolo.predict(source=img_path, save=False,device="cuda",verbose=False)
     original_img = cv2.imread(img_path)
@@ -52,10 +52,13 @@ def inference_global(img_path):
     os.makedirs("output/detections_class0",exist_ok=True)
     for i, box in enumerate(boxes):
         cls = int(box.cls[0])  # classe prédite
+        print(cls)
         if cls == 0 and boxes.conf[0] > 0.37:
             xyxy = box.xyxy[0].cpu().numpy().astype(int)  # coordonnées (x1, y1, x2, y2)
             x1, y1, x2, y2 = xyxy
             crop = original_img[y1:y2, x1:x2]  # découper l'image
+            os.makedirs(f"output/detections_class0",exist_ok=True)
+            cv2.imwrite(f"output/detections_class0/detection_{i}.png",crop)
             images.append(cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY))
     with ThreadPoolExecutor() as executor:
         best_match = list(executor.map(matcher, images))
@@ -66,7 +69,7 @@ def inference_global(img_path):
 
 if __name__ == "__main__":
     # train_yolo_vision()
-    img_path = "data_recognize/raw/field.png"
+    img_path = "data_recognize/raw/choice_side_bar.png"
     inference_global(img_path)
 
 ################################################################################
