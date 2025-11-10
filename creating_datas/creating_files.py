@@ -47,7 +47,9 @@ def main():
             iteration += 1
             if not os.path.exists(f"data_recognize/raw.json"):
                 os.mkdir(f"data_recognize/raw", exist_ok=True)
-            create_file(f"data_recognize/raw/datas_{iteration}.json", state)
+            if latest_state is not None:
+                create_file(f"data_recognize/raw/datas_{iteration}.json", state)
+                latest_state = None
 
 ################################################################################
 
